@@ -1,0 +1,166 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<title>MP2: Terrain</title>
+<meta charset="utf-8">
+</head>
+
+  <!-- If you add additional .js files, be sure to add them here. -->
+  <script src="gl-matrix-min.js"></script>
+  <script src="Terrain.js"></script>
+  <script src="MP2.js"></script>
+
+  <!-- MP2: Modify the shaders to implement Phong shading instead of Gourand! -->
+  <script id="shader-vs" type="x-shader/x-vertex">#version 300 es
+  // Vertex Shader
+  // Implements Gourand shading. See the lecture on "Basic Shading" for details.
+
+  // Use high-precision floats if available on this device.
+    #ifdef GL_FRAGMENT_PRECISION_HIGH
+    precision highp float;
+    #else
+    precision mediump float;
+    #endif
+
+    in vec3 vertexPosition;
+    in vec3 vertexNormal;
+
+    uniform mat4 modelViewMatrix;
+    uniform mat4 projectionMatrix;
+    uniform mat3 normalMatrix;
+    uniform float highZ;
+    uniform float lowZ;
+
+    //out vec4 vertexColor;
+    out vec3 vertexPositionView;
+    out vec3 vertexNormalView;
+    //out vec3 cameraPositionView;
+    out vec3 kDiffuse;
+    out vec3 kAmbient;
+
+    void main(void) {
+        // Transform the vertex position and normal to view coordinates
+        vertexPositionView =(modelViewMatrix * vec4(vertexPosition, 1.0)).xyz;
+        vertexNormalView = normalize(normalMatrix * vertexNormal);
+
+        // The camera is at the origin in view coordinates
+        //vec3 cameraPositionView = vec3(0.0, 0.0, 0.0);
+
+        //attempted to color the map before I changed the viewpoint but came out warped for some reason
+        float temp = vertexPosition.z-lowZ;
+        float temp1 = highZ-lowZ;
+        float h = temp/temp1;
+
+        if (h<.19){
+          kDiffuse = vec3(0.0,128.0/255.0,1.0); //light blue
+          //kAmbient = vec3(0,128/255,1);
+        }
+        if (h>=.19 && h < .4){
+          kDiffuse = vec3(0.0,102.0/255.0,0.0); //dark green
+          //kAmbient = vec3(0,102/255,0);
+        }
+        if (h>=.4 && h<.7){
+          kDiffuse = vec3(153.0/255.0,76.0/255.0,0.0); //brown
+          //kAmbient = vec3(153/255,76/255,0);
+        }
+        if (h>=.7){
+          kDiffuse = vec3(192.0/255.0,192.0/255.0,192.0/255.0);//big grey
+          //kAmbient = vec3(192/255,192/255,192/255);
+        }
+//0 128 255 wata
+//153 76 0
+
+        // Calculate the three other vectors we need: l, r, and v
+        gl_Position =
+            projectionMatrix * modelViewMatrix * vec4(vertexPosition, 1.0);
+    }
+  </script>
+
+  <!-- MP2: Modify the shaders to implement Phong shading instead of Gourand! -->
+  <script id="shader-fs" type="x-shader/x-fragment">#version 300 es
+  // Fragment Shader
+  // Implements Gourand shading. See the lecture on "Basic Shading" for details.
+
+  // Use high-precision floats if available on this device.
+    #ifdef GL_FRAGMENT_PRECISION_HIGH
+    precision highp float;
+    #else
+    precision mediump float;
+    #endif
+
+
+    //in vec4 vertexColor;
+    in vec3 vertexPositionView;
+    in vec3 vertexNormalView;
+    in vec3 kDiffuse;
+    in vec3 vertexPosition;
+    //in vec3 cameraPositionView;
+
+    in vec3 kAmbient;
+    //uniform vec3 kDiffuse;
+    uniform vec3 kSpecular;
+    uniform float shininess;
+
+    uniform vec3 lightPosition;
+    uniform vec3 ambientLightColor;
+    uniform vec3 diffuseLightColor;
+    uniform vec3 specularLightColor;
+
+    //had to transform gourand shading to phong shading, moved all the lines of code
+    //that had anything to do with coloring to the fragment shader
+    //since the fragment shader is used intensively for phong shading
+    out vec4 fragmentColor;
+
+
+    void main(void) {
+        // Interpolate the computed vertex color for each fragment.
+        float LOG2 = 1.442695;
+        vec4 fColor = vec4(1.0,1.0,1.0,1.0);
+        float fogDistance = length(vertexPosition);
+        float u_fogDensity = 0.5;
+        float fogAmount = 1.0 - exp2(-u_fogDensity * u_fogDensity * fogDistance *fogDistance *LOG2);
+        fogAmount = clamp(fogAmount, 0.0, 1.0);
+        //outColor = mix(color,u_fColor, fogAmount);
+
+        vec3 lightVector = normalize(lightPosition - vertexPositionView);
+        vec3 reflectionVector = normalize(reflect(-lightVector, vertexNormalView));
+        vec3 viewVector = normalize(-vertexPositionView);
+        float diffuseWeight = max(dot(vertexNormalView, lightVector), 0.0);
+
+        // Calculate the specular light weighting: (r dot v)^(shininess)
+        float rDotV = max(dot(reflectionVector, viewVector), 0.0);
+        float specularWeight = pow(rDotV, shininess);
+
+        // Sum up all three lighting components into the color for the vertex,
+        // and send it to the fragment shader.
+        vec4 vertexColor = vec4((  kAmbient * ambientLightColor
+                            + kDiffuse * diffuseLightColor * diffuseWeight
+                            + kSpecular * .3 * specularLightColor * specularWeight), 1.0);
+
+        fragmentColor = mix(fColor,vertexColor,fogAmount);
+    }
+  </script>
+
+  <body onload="startup();">
+      <canvas id="glCanvas" width="1200" height="600"></canvas>
+
+      <form id="input_form">
+          <fieldset>
+              <legend>Rendering Options</legend>
+              <div>
+                  <input type="radio" name="primitive" id="wireframe" value="wireframe"> Wireframe
+                  <input type="radio" name="primitive" id="polygon" value="polygon" checked> Polygon
+                  <input type="radio" name="primitive" id="wirepoly" value="wirepoly" > Polygon with Edges
+              </div>
+          </fieldset>
+          <fieldset>
+            <div>
+            <input type="checkbox" id="fog" name="fog" checked>
+            <label for="fog">Enable Fog</label>
+            </div>
+          </fieldset>
+
+      </form>
+  </body>
+
+  </html>

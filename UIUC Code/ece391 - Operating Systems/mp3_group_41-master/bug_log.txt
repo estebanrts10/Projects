@@ -1,0 +1,146 @@
+Checkpoint 5:
+Multi-Terminals
+problem  - Page fault when switching in between terminals, only initial switch 
+fix      - Didn't set esp0 of tss correctly from checkpoint 3
+when     - 5/1/2020
+who      - cllamas2, enr2
+
+Multi-Terminals
+problem  - PCB kept getting reset; stack, process number, etc would reset to 0
+fix      - Variables were local, overwrote PCB values on stack
+when     - 5/1/2020
+who      - ijf2, pujithb2
+
+Multi-Terminals
+problem  - Exception 15's when trying to halt a process when switching
+fix      - Did not correctly save parent process ID variable for PCB from checkpoint 3
+when     - 5/1/2020
+who      - enr2, pujithb2
+
+Scheduling
+problem  - Pingpong slows down a lot as more processes run
+fix      - Virtualize RTC
+when     - 5/2/2020
+who      - ijf2
+
+
+Checkpoint 4:
+Vidmap  - 
+problem  - would page fault whenever it was run
+fix      - Set the starting address for the user video page to the correct location.
+when     - 4/16/2020
+who      - pujithb2
+
+Fish  - 
+problem  - Fish appeared in the wrong areas
+fix      - Was reading the wrong bounds for read sys call
+when     - 4/17/2020
+who      - ijf2
+
+Cat  - 
+problem  - Would not read files larger than 1024 properly
+fix      - Was not updating the file pos in the fd properly
+when     - 4/17/2020
+who      - enr2
+
+Grep  - 
+problem  - Would print random files that did not have the word searched
+fix      - Clear the input buffer
+when     - 4/18/2020
+who      - cllamas2
+
+
+Checkpoint 3:
+
+Execute  - 
+problem  - When pressing enter after typing something in shell, other characters would still show up underneath
+fix      - Clear buffer of characters
+when     - 4/9/2020
+who      - enr2
+
+Execute  -
+problem  - Couldn't see which files were open
+fix      - "values" flag wasn't correctly set up initially  
+when     - 4/12/2020
+who      - cllamas2
+
+Read     - 
+problem  - pinpong program not working correctly
+fix      - Need to call STI to set interrupt flags on
+when     - 4/12/2020
+who      - pujithb2
+
+Execute  - 
+problem  - ls command in shell not working 
+fix      - Didn't return number of bytes in terminal write correctly
+when     - 4/12/2020
+who      - ijf2, cllamas2
+
+Execute & Halt 
+problem  - Bootloops
+fix      - Changed in-line assembly in execute and halt to their own files
+when     - 4/12/2020
+who      - ijf2
+
+
+Checkpoint 2:
+
+Keyboard -
+problem  - <>?(shift + ,./) would print garbage characters
+fix      - the character array was getting cut off before reaching those characters for the shift case
+when     - 3/28
+who      - ijf2, enr2
+
+Keyboard -
+problem  - would not correctly scroll when it reached the bottom of the screen
+fix      - forgot to add the case for enter button pressed
+when     - 3/29
+who      - ijf2
+
+Keyboard -
+problem  - caps boundary conditions were off
+fix      - had to make a case for when shift and cpas were pressed at the same time
+when     - 3/29
+who      - enr2
+
+Read_dentry_by_name -
+problem  - was not setting the correct address in kernel
+fix      - set the correct address in kernel
+when     - 3/29
+who      - pujithb2
+
+
+
+Checkpoint 1:
+
+Paging   -
+problem  - paging showing up as disabled
+fix      - had to shift the address correctly
+when     - 3/23
+who      - pujithb2
+
+Keyboard -
+problem  - Letters and symbols would flash and disappear randomly across the screen
+           the keyboard handler was taking into account the unpressed characters because the set included them
+fix      - change the set to only have the button pressed values.
+when     - 3/22
+who      - cllamas2, enr2
+
+Keyboard -
+problem  - Y or Z would pop up every time a 1,2,3, or j was pressed.
+solution - if(key<=0x32) then we do the necessary keyboard functions to limit the array to the values used
+when     - 3/22
+who      - cllamas2, enr2
+
+RTC      -
+problem  - was not working
+fix      - when using outb, we had the port and the value positions switched
+when     - 3/22
+who      - ijf2
+
+RTC      -
+problem  - in send_eoi, we were not ORing the EOI with the
+           port on master that the slave was connected to
+fix      - we did that ^
+when     - 3/22
+who      - ijf2

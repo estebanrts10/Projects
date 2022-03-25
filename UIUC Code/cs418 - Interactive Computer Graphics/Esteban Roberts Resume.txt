@@ -1,0 +1,67 @@
+﻿Esteban Roberts
+
+
+7888 Roseland Dr, La Jolla, CA
+(760) 604-6248
+Estebanrts10@hotmail.com
+EDUCATION
+
+
+University of Illinois at Urbana-Champaign        August 2017 - May 2021
+B.S. in Computer Engineering
+
+
+SKILLS
+
+
+* Strong in C++ and Python
+* Proficiency in C, Git, Arduino Environment, and Javascript
+* Experience using CMake, Assembly Language, HTML, Java, CSS, System Verilog, CUDA, WGSL, and Vim
+
+
+PROJECTS
+
+
+Asynchronous Web Server
+* Developed an asynchronous Web server using an ESP32-S2 microcontroller to monitor the health of a plant in real time using various sensors all encapsulated into a single device.
+* Implemented front end of Web server to allow user input for sensor bounds. [a]
+* Used ESP32-S2 to connect to Wifi while sending and receiving information to sensors and the Web server.
+* Modified Arduino IDE to allow it to be compatible with the unsupported ESP32-S2.
+
+
+Linux Based Operating System
+* Implemented a Linux based operating system using C++ and x86 assembly language.
+* The operating system consisted of a command line interpreter that supported context switching, paging, keyboard inputs, and simple file system.
+* Worked in a four student team in order to effectively manage the workload.
+
+
+Naive Bayes Algorithm
+* Used the Naive Bayes algorithm to train a classifier to know good movie reviews from bad ones.
+* Took 8,000 training examples, marked either positive or negative to then classify an additional 5,000 developmental examples between bad and good reviews.
+
+
+Photo Mosaic
+* Implemented a photo mosaic in C++ using a nearest neighbor search algorithm and K-D trees to create a picture by sorting smaller pictures by color.
+
+
+
+
+RELEVANT COURSEWORK
+
+
+* Data Structures
+* Computer Systems Engineering
+* Artificial Intelligence
+* Interactive Computer Graphics
+* Applied parallel programming
+
+
+ADDITIONAL SKILLS
+
+
+* Native Spanish and English speaker
+
+
+
+
+[a]reread all this
